@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-web-ser
+  namespace: golang
+spec:
+  selector:
+    app: go-web
+  ports:
+  - protocol: TCP
+    port: 9000
+  type: ClusterIP

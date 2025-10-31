@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-web-dep
+  namespace: golang
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: go-web
+  template:
+    metadata:
+      name: go-pod
+      labels:
+        app: go-web
+    spec:
+      containers:
+        - name: go-con
+          image: sairathod/go-web-app:latest
+          ports:
+          - containerPort: 9000
+          

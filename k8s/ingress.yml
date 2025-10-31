@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: go-ingress
+  namespace: golang
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /courses
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: go-web-ser
+            port: 
+              number: 9000
