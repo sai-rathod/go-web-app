@@ -48,7 +48,7 @@ jobs:
         token: ${{ secrets.GIT_TOKEN }}
     - name: changing the manifest
       run: |
-        sed -i 's/go-web-app:.*/go-web-app:"${{ github.run_id }}"/' k8s/deployment.yml
+        sed -i "s/go-web-app:.*/go-web-app:${{ github.run_id }}/" k8s/deployment.yml
     - name: pushing the changes
       run: |
         git config --global user.name ${{ secrets.GIT_USER }}
