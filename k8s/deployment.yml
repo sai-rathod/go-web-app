@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: go-con
-          image: sairathod/go-web-app:"18998596503"
+          image: sairathod/go-web-app:18998706093
           ports:
           - containerPort: 9000
           
