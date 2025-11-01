@@ -35,7 +35,7 @@ jobs:
         password: ${{ secrets.DOCKERPASS }}
     - name: push
       run: |
-        docker build -t ${{ secrets.DOCKERUSER }}/go-web-app:${{ github.run_id }}
+        docker build -t ${{ secrets.DOCKERUSER }}/go-web-app:${{ github.run_id }} .
         docker push ${{ secrets.DOCKERUSER }}/go-web-app:${{ github.run_id }}
 
   manifest-changes:
