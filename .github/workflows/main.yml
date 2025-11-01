@@ -1,0 +1,60 @@
+name: go CI
+run-name: running the go web application
+on:
+  push:
+    branches:
+    - main
+    paths-ignore: ["README.md","k8s/**",".github/workflows/**"]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v4
+    - name: go setup
+      uses: actions/setup-go@v5
+      with:
+        go-version: 1.22.5
+    - name: lint
+      uses: golangci/golangci-lint-action@v6
+    - name: test
+      run: go test -v ./...
+    - name: build
+      run: go build -v ./...
+
+  push-to-hub:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: docker login
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERUSER }}
+        password: ${{ secrets.DOCKERPASS }}
+    - name: push
+      run: |
+        docker build -t ${{ secrets.DOCKERUSER }}/go-web-app:${{ github.run_id }}
+        docker push ${{ secrets.DOCKERUSER }}/go-web-app:${{ github.run_id }}
+
+  manifest-changes:
+    needs: [build,push-to-hub]
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GIT_TOKEN }}
+    - name: changing the manifest
+      run: |
+        sed -i 's/tag:.*/tag:"${{ github.run_id }}"/' k8s/deployment.yml
+    - name: pushing the changes
+      run: |
+        gitconfig --global user.name ${{ secrets.GIT_USER }}
+        gitconfig --global user.email ${{ secrets.GIT_EMAIL }}
+        git add k8s/deployment.yml
+        git commit -m "tag: ${{ github.run_id }}"
+        git push
+        echo "push successful"  
+      
